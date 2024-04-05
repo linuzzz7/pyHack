@@ -19,8 +19,8 @@ def spoof(target_ip, spoof_ip):
 def restore(destination_ip, source_ip):
     destination_mac = get_mac(destination_ip)
     source_mac = get_mac(source_ip)
-    packet = scapy.ARP(op=2, pdst=destination_ip, hwdst=destination_mac, psrc=source_ip, hwsrc=source_mac)
     # и надо указать мас-источника, иначе будет подставлен наш по умолчанию - hwsrc
+    packet = scapy.ARP(op=2, pdst=destination_ip, hwdst=destination_mac, psrc=source_ip, hwsrc=source_mac)
     scapy.send(packet, count=4, verbose=False)  # отправляем пакет 4 раза, чтобы наверняка
 
 try:
