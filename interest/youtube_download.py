@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from pytube import YouTube
 from pydub import AudioSegment
 
